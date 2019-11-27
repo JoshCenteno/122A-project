@@ -498,11 +498,11 @@ END GROUP
  *(.debug_frame)
  .debug_frame   0x00000000      0x118 main.o
 
-.debug_str      0x00000000      0x584
+.debug_str      0x00000000      0x592
  *(.debug_str)
  .debug_str     0x00000000      0x296 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega1284/avr51/crtatmega1284.o
- .debug_str     0x00000296      0x2ee main.o
-                                0x33e (size before relaxing)
+ .debug_str     0x00000296      0x2fc main.o
+                                0x34c (size before relaxing)
 
 .debug_loc      0x00000000      0x4cb
  *(.debug_loc)
@@ -532,5 +532,5 @@ END GROUP
 
 .debug_macro
  *(.debug_macro)
-OUTPUT(switch_test.elf elf32-avr)
+OUTPUT(switch_with_sensor.elf elf32-avr)
 LOAD linker stubs

@@ -1,5 +1,5 @@
 
-switch_test.elf:     file format elf32-avr
+switch_with_sensor.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
@@ -23,11 +23,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_frame  00000118  00000000  00000000  00002564  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000584  00000000  00000000  0000267c  2**0
+ 10 .debug_str    00000592  00000000  00000000  0000267c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000004cb  00000000  00000000  00002c00  2**0
+ 11 .debug_loc    000004cb  00000000  00000000  00002c0e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000080  00000000  00000000  000030cb  2**0
+ 12 .debug_ranges 00000080  00000000  00000000  000030d9  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -320,7 +320,7 @@ int d_Tick(){
 		break;
  20c:	48 c0       	rjmp	.+144    	; 0x29e <d_Tick+0xba>
 		case wait:
-		if (b1)
+		if (!(PIND & (1<<0)))
  20e:	48 99       	sbic	0x09, 0	; 9
  210:	04 c0       	rjmp	.+8      	; 0x21a <d_Tick+0x36>
 		{
@@ -329,10 +329,10 @@ int d_Tick(){
  214:	80 93 24 01 	sts	0x0124, r24	; 0x800124 <d_state>
  218:	4a c0       	rjmp	.+148    	; 0x2ae <d_Tick+0xca>
 		}
- 		else if(b2){
+		else if(b2){
  21a:	49 99       	sbic	0x09, 1	; 9
  21c:	40 c0       	rjmp	.+128    	; 0x29e <d_Tick+0xba>
- 			d_state = swap;
+			d_state = swap;
  21e:	84 e0       	ldi	r24, 0x04	; 4
  220:	80 93 24 01 	sts	0x0124, r24	; 0x800124 <d_state>
  224:	52 c0       	rjmp	.+164    	; 0x2ca <d_Tick+0xe6>
@@ -341,21 +341,21 @@ int d_Tick(){
 		}
 		break;
 		case on:
-		if (b1)
+		if (!(PIND & (1<<0)))
  226:	48 9b       	sbis	0x09, 0	; 9
  228:	42 c0       	rjmp	.+132    	; 0x2ae <d_Tick+0xca>
 		{
 			d_state = on;
 		}
 		
- 		else if(b2){
+		else if(b2){
  22a:	49 99       	sbic	0x09, 1	; 9
  22c:	04 c0       	rjmp	.+8      	; 0x236 <d_Tick+0x52>
- 			d_state = swap;
+			d_state = swap;
  22e:	84 e0       	ldi	r24, 0x04	; 4
  230:	80 93 24 01 	sts	0x0124, r24	; 0x800124 <d_state>
  234:	4a c0       	rjmp	.+148    	; 0x2ca <d_Tick+0xe6>
- 		}
+		}
 		else{
 			d_state = leave;
  236:	83 e0       	ldi	r24, 0x03	; 3
@@ -364,7 +364,7 @@ int d_Tick(){
 		}
 		break;
 		case leave:
-		if (b1)
+		if (!(PIND & (1<<0)))
  23e:	48 99       	sbic	0x09, 0	; 9
  240:	04 c0       	rjmp	.+8      	; 0x24a <d_Tick+0x66>
 		{
@@ -374,15 +374,15 @@ int d_Tick(){
  248:	32 c0       	rjmp	.+100    	; 0x2ae <d_Tick+0xca>
 		}
 		
- 		else if(b2){
+		else if(b2){
  24a:	49 99       	sbic	0x09, 1	; 9
  24c:	04 c0       	rjmp	.+8      	; 0x256 <d_Tick+0x72>
- 			d_state = swap;
+			d_state = swap;
  24e:	84 e0       	ldi	r24, 0x04	; 4
  250:	80 93 24 01 	sts	0x0124, r24	; 0x800124 <d_state>
  254:	3a c0       	rjmp	.+116    	; 0x2ca <d_Tick+0xe6>
- 		}
-		else if (!b1 && cnt >= 3)
+		}
+		else if ((PIND & (1<<0)) && cnt >= 3)
  256:	48 9b       	sbis	0x09, 0	; 9
  258:	30 c0       	rjmp	.+96     	; 0x2ba <d_Tick+0xd6>
  25a:	80 91 1d 01 	lds	r24, 0x011D	; 0x80011d <cnt>
@@ -398,39 +398,39 @@ int d_Tick(){
 		}
 		break;
 		case swap:
-			if (b2){
+		if (b2){
  26a:	49 9b       	sbis	0x09, 1	; 9
  26c:	2e c0       	rjmp	.+92     	; 0x2ca <d_Tick+0xe6>
-				d_state = swap;
-			}
-			else if (manual == 0x00){
+			d_state = swap;
+		}
+		else if (manual == 0x00){
  26e:	80 91 1c 01 	lds	r24, 0x011C	; 0x80011c <manual>
  272:	81 11       	cpse	r24, r1
  274:	04 c0       	rjmp	.+8      	; 0x27e <d_Tick+0x9a>
-				d_state = idle;
+			d_state = idle;
  276:	85 e0       	ldi	r24, 0x05	; 5
  278:	80 93 24 01 	sts	0x0124, r24	; 0x800124 <d_state>
  27c:	29 c0       	rjmp	.+82     	; 0x2d0 <d_Tick+0xec>
-			}
-			else{
-				d_state = wait;
+		}
+		else{
+			d_state = wait;
  27e:	81 e0       	ldi	r24, 0x01	; 1
  280:	80 93 24 01 	sts	0x0124, r24	; 0x800124 <d_state>
  284:	0c c0       	rjmp	.+24     	; 0x29e <d_Tick+0xba>
-			}
+		}
 		break;
 		case idle:
-			if (b2)
+		if (b2)
  286:	49 99       	sbic	0x09, 1	; 9
  288:	23 c0       	rjmp	.+70     	; 0x2d0 <d_Tick+0xec>
-			{
-				d_state = swap;
+		{
+			d_state = swap;
  28a:	84 e0       	ldi	r24, 0x04	; 4
  28c:	80 93 24 01 	sts	0x0124, r24	; 0x800124 <d_state>
  290:	1c c0       	rjmp	.+56     	; 0x2ca <d_Tick+0xe6>
-			else{
-				d_state = idle;
-			}
+		else{
+			d_state = idle;
+		}
 		break;
 		default:
 		d_state = init;
@@ -514,105 +514,105 @@ int s_Tick(){
  2f4:	59 f1       	breq	.+86     	; 0x34c <s_Tick+0x72>
  2f6:	3a c0       	rjmp	.+116    	; 0x36c <s_Tick+0x92>
 		case init2:
-			//s_state = init2;
-			s_state = automatic;
+		//s_state = init2;
+		s_state = automatic;
  2f8:	81 e0       	ldi	r24, 0x01	; 1
  2fa:	80 93 23 01 	sts	0x0123, r24	; 0x800123 <s_state>
 		break;
  2fe:	38 c0       	rjmp	.+112    	; 0x370 <s_Tick+0x96>
 
 		case automatic:
-			if (b2)
+		if (b2)
  300:	49 99       	sbic	0x09, 1	; 9
  302:	36 c0       	rjmp	.+108    	; 0x370 <s_Tick+0x96>
-			{
-				s_state = swap2;
+		{
+			s_state = swap2;
  304:	84 e0       	ldi	r24, 0x04	; 4
  306:	80 93 23 01 	sts	0x0123, r24	; 0x800123 <s_state>
  30a:	32 c0       	rjmp	.+100    	; 0x370 <s_Tick+0x96>
-				s_state = automatic;
-			}
+			s_state = automatic;
+		}
 		break;
 
 		case power:
-			if (!s && !b2)
+		if (!s && !b2)
  30c:	4a 9b       	sbis	0x09, 2	; 9
  30e:	06 c0       	rjmp	.+12     	; 0x31c <s_Tick+0x42>
  310:	49 9b       	sbis	0x09, 1	; 9
  312:	04 c0       	rjmp	.+8      	; 0x31c <s_Tick+0x42>
-			{
-				s_state = off;
+		{
+			s_state = off;
  314:	83 e0       	ldi	r24, 0x03	; 3
  316:	80 93 23 01 	sts	0x0123, r24	; 0x800123 <s_state>
  31a:	31 c0       	rjmp	.+98     	; 0x37e <s_Tick+0xa4>
-			} 
-			else if (s && !b2)
+		}
+		else if (s && !b2)
  31c:	4a 99       	sbic	0x09, 2	; 9
  31e:	02 c0       	rjmp	.+4      	; 0x324 <s_Tick+0x4a>
  320:	49 99       	sbic	0x09, 1	; 9
  322:	2a c0       	rjmp	.+84     	; 0x378 <s_Tick+0x9e>
-			{
-				s_state = on;
-			}
-			else{
-				s_state = swap2;
+		{
+			s_state = on;
+		}
+		else{
+			s_state = swap2;
  324:	84 e0       	ldi	r24, 0x04	; 4
  326:	80 93 23 01 	sts	0x0123, r24	; 0x800123 <s_state>
  32a:	22 c0       	rjmp	.+68     	; 0x370 <s_Tick+0x96>
-			}
+		}
 		break;
 		
 		case off:
-			if (!s && !b2)
+		if (!s && !b2)
  32c:	4a 9b       	sbis	0x09, 2	; 9
  32e:	02 c0       	rjmp	.+4      	; 0x334 <s_Tick+0x5a>
  330:	49 99       	sbic	0x09, 1	; 9
  332:	25 c0       	rjmp	.+74     	; 0x37e <s_Tick+0xa4>
-			{
-				s_state = off;
-			}
-			else if (s && !b2)
+		{
+			s_state = off;
+		}
+		else if (s && !b2)
  334:	4a 99       	sbic	0x09, 2	; 9
  336:	06 c0       	rjmp	.+12     	; 0x344 <s_Tick+0x6a>
  338:	49 9b       	sbis	0x09, 1	; 9
  33a:	04 c0       	rjmp	.+8      	; 0x344 <s_Tick+0x6a>
-			{
-				s_state = on;
+		{
+			s_state = on;
  33c:	82 e0       	ldi	r24, 0x02	; 2
  33e:	80 93 23 01 	sts	0x0123, r24	; 0x800123 <s_state>
  342:	1a c0       	rjmp	.+52     	; 0x378 <s_Tick+0x9e>
-			}
-			else{
-				s_state = swap2;
+		}
+		else{
+			s_state = swap2;
  344:	84 e0       	ldi	r24, 0x04	; 4
  346:	80 93 23 01 	sts	0x0123, r24	; 0x800123 <s_state>
  34a:	12 c0       	rjmp	.+36     	; 0x370 <s_Tick+0x96>
-			}
+		}
 		break;
 		
 		case swap2:
-			if (b2){
+		if (b2){
  34c:	49 9b       	sbis	0x09, 1	; 9
  34e:	10 c0       	rjmp	.+32     	; 0x370 <s_Tick+0x96>
-				s_state = swap2;
-			}
-			else if (!b2 && manual == 0x00){
+			s_state = swap2;
+		}
+		else if (!b2 && manual == 0x00){
  350:	49 9b       	sbis	0x09, 1	; 9
  352:	08 c0       	rjmp	.+16     	; 0x364 <s_Tick+0x8a>
  354:	80 91 1c 01 	lds	r24, 0x011C	; 0x80011c <manual>
  358:	81 11       	cpse	r24, r1
  35a:	04 c0       	rjmp	.+8      	; 0x364 <s_Tick+0x8a>
-				s_state = automatic;
+			s_state = automatic;
  35c:	81 e0       	ldi	r24, 0x01	; 1
  35e:	80 93 23 01 	sts	0x0123, r24	; 0x800123 <s_state>
  362:	06 c0       	rjmp	.+12     	; 0x370 <s_Tick+0x96>
-			}
-			else{
-				s_state = off;
+		}
+		else{
+			s_state = off;
  364:	83 e0       	ldi	r24, 0x03	; 3
  366:	80 93 23 01 	sts	0x0123, r24	; 0x800123 <s_state>
  36a:	09 c0       	rjmp	.+18     	; 0x37e <s_Tick+0xa4>
-			}	
+		}
 		break;
 		
 		default:

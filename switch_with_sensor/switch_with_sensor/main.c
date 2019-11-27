@@ -59,40 +59,40 @@ int d_Tick(){
 		d_state = wait;
 		break;
 		case wait:
-		if (b1)
+		if (!(PIND & (1<<0)))
 		{
 			d_state = on;
 		}
- 		else if(b2){
- 			d_state = swap;
- 		}
+		else if(b2){
+			d_state = swap;
+		}
 		else{
 			d_state = wait;
 		}
 		break;
 		case on:
-		if (b1)
+		if (!(PIND & (1<<0)))
 		{
 			d_state = on;
 		}
 		
- 		else if(b2){
- 			d_state = swap;
- 		}
+		else if(b2){
+			d_state = swap;
+		}
 		else{
 			d_state = leave;
 		}
 		break;
 		case leave:
-		if (b1)
+		if (!(PIND & (1<<0)))
 		{
 			d_state = on;
 		}
 		
- 		else if(b2){
- 			d_state = swap;
- 		}
-		else if (!b1 && cnt >= 3)
+		else if(b2){
+			d_state = swap;
+		}
+		else if ((PIND & (1<<0)) && cnt >= 3)
 		{
 			d_state = wait;
 		}
@@ -101,24 +101,24 @@ int d_Tick(){
 		}
 		break;
 		case swap:
-			if (b2){
-				d_state = swap;
-			}
-			else if (manual == 0x00){
-				d_state = idle;
-			}
-			else{
-				d_state = wait;
-			}
+		if (b2){
+			d_state = swap;
+		}
+		else if (manual == 0x00){
+			d_state = idle;
+		}
+		else{
+			d_state = wait;
+		}
 		break;
 		case idle:
-			if (b2)
-			{
-				d_state = swap;
-			}
-			else{
-				d_state = idle;
-			}
+		if (b2)
+		{
+			d_state = swap;
+		}
+		else{
+			d_state = idle;
+		}
 		break;
 		default:
 		d_state = init;
@@ -160,59 +160,59 @@ int s_Tick(){
 	//Transitions
 	switch(s_state){
 		case init2:
-			//s_state = init2;
-			s_state = automatic;
+		//s_state = init2;
+		s_state = automatic;
 		break;
 
 		case automatic:
-			if (b2)
-			{
-				s_state = swap2;
-			} 
-			else
-			{
-				s_state = automatic;
-			}
+		if (b2)
+		{
+			s_state = swap2;
+		}
+		else
+		{
+			s_state = automatic;
+		}
 		break;
 
 		case power:
-			if (!s && !b2)
-			{
-				s_state = off;
-			} 
-			else if (s && !b2)
-			{
-				s_state = on;
-			}
-			else{
-				s_state = swap2;
-			}
+		if (!s && !b2)
+		{
+			s_state = off;
+		}
+		else if (s && !b2)
+		{
+			s_state = on;
+		}
+		else{
+			s_state = swap2;
+		}
 		break;
 		
 		case off:
-			if (!s && !b2)
-			{
-				s_state = off;
-			}
-			else if (s && !b2)
-			{
-				s_state = on;
-			}
-			else{
-				s_state = swap2;
-			}
+		if (!s && !b2)
+		{
+			s_state = off;
+		}
+		else if (s && !b2)
+		{
+			s_state = on;
+		}
+		else{
+			s_state = swap2;
+		}
 		break;
 		
 		case swap2:
-			if (b2){
-				s_state = swap2;
-			}
-			else if (!b2 && manual == 0x00){
-				s_state = automatic;
-			}
-			else{
-				s_state = off;
-			}	
+		if (b2){
+			s_state = swap2;
+		}
+		else if (!b2 && manual == 0x00){
+			s_state = automatic;
+		}
+		else{
+			s_state = off;
+		}
 		break;
 		
 		default:
